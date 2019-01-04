@@ -88,8 +88,8 @@ fos_rest:
     serializer:
         serialize_null: true
     param_fetcher_listener: force
-    exception:
-        enabled: true
-        codes:
-            { AppBundle\Exception\ResourceValidationException: 400 }
-        exception_controller: 'fos_rest.exception.controller:showAction'
+    # exception:
+    #     enabled: true
+    #     codes:
+    #         { AppBundle\Exception\ResourceValidationException: 400 }
+    #     exception_controller: 'fos_rest.exception.controller:showAction'

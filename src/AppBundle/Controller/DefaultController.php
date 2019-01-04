@@ -108,14 +108,58 @@ class DefaultController extends FOSRestController
 
     /**
      * @Rest\Put(
-     *      path = "/articles/update/{id}",
+     *      path = "/article/update/{id}",
      *      name = "article_update",
-     *      requirements = {"id"="d\+"}
+     *      requirements = {"id"="\d+"}
      * )
-     * @Rest\View(StatusCode = 200)
-     * @ParamConverter("article", converter="fos_rest.request_body")
+     * @Rest\View()
+     * @ParamConverter("articleupdated",
+     *                 converter="fos_rest.request_body",
+     *                 options={
+     *                      "validator"={ "groups"="Create" }
+     *                 })
      */
-    public function updateAction($id, Article $article)
+    public function updateAction($id, Article $articleupdated, ConstraintViolationList $violations)
+    {
+        $article = $this->getDoctrine()->getRepository('AppBundle:Article')->find($id);
+
+        if (empty($article))
+        {
+            throw new Exception("Cet article n'existe pas");
+        }
+
+        if (count($violations)) {
+            $message = "Error: ";
+
+            foreach ($violations as $violation) {
+                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
+            }
+
+            throw new ResourceValidationException($message);
+        }
+
+        $article->setTitle($articleupdated->getTitle());
+        $article->setContent($articleupdated->getContent());
+        $article->setAuthor($articleupdated->getAuthor());
+
+        $em = $this->getDoctrine()->getManager();
+
+        $em->persist($article);
+        $em->flush();
+
+        return $article;
+    }
+
+    /**
+     * @Rest\Delete(
+     *      path="/article/delete/{id}",
+     *      name="article_delete",
+     *      requirements={"id"="\d+"}
+     * )
+     * @Rest\View()
+     * @ParamConverter("article")
+     */
+    public function deleteAction($id, Article $article)
     {
         $article = $this->getDoctrine()->getRepository('AppBundle:Article')->find($id);
 
@@ -126,9 +170,11 @@ class DefaultController extends FOSRestController
 
         $em = $this->getDoctrine()->getManager();
 
-        $em->persist($article);
+        $em->remove($article);
         $em->flush();
 
-        return $article;
+        $response = "Article removed";
+
+        return $response;
     }
 }
