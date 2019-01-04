@@ -4,12 +4,14 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Author
  *
  * @ORM\Table(name="author")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AuthorRepository")
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class Author
 {
@@ -26,6 +28,7 @@ class Author
      * @var string
      *
      * @ORM\Column(name="fullname", type="string", length=100)
+     * @Serializer\Expose
      */
     private $fullname;
 
@@ -33,6 +36,7 @@ class Author
      * @var string
      *
      * @ORM\Column(name="biography", type="text")
+     * @Serializer\Expose
      */
     private $biography;
 
